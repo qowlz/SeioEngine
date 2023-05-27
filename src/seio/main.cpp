@@ -207,7 +207,7 @@ int main()
           // Get the size of the child (i.e. the whole draw size of the windows).
         ImVec2 wsize = ImGui::GetWindowSize();
         // Because I use the texture from OpenGL, I need to invert the V from the UV.
-        ImGui::Image((ImTextureID)texture, wsize, ImVec2(0, 1), ImVec2(1, 0));
+        ImGui::Image((ImTextureID)(uintptr_t)texture, wsize, ImVec2(0, 1), ImVec2(1, 0));
         ImGui::EndChild();
         ImGui::End();
 
