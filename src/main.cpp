@@ -11,7 +11,13 @@
 #include "imgui_impl_glfw.h"
 #include "imgui_impl_opengl3.h"
 
+#include "GL/VertexArrayObject.h"
+#include "GL/VertexBufferObject.h"
+#include "GL/Shader.h"
+
 #include <iostream>
+#include <vector>
+#include <filesystem>
 #define GL_SILENCE_DEPRECATION
 #include <glad/glad.h>
 #include <GLFW/glfw3.h> // Will drag system OpenGL headers
@@ -100,6 +106,25 @@ int main(int, char**)
     //ImFont* font = io.Fonts->AddFontFromFileTTF("c:\\Windows\\Fonts\\ArialUni.ttf", 18.0f, nullptr, io.Fonts->GetGlyphRangesJapanese());
     //IM_ASSERT(font != nullptr);
 
+    VertexArrayObject vao;
+    vao.Bind();
+
+    std::vector<float> vertices {
+        -0.5f, -0.5f, 0.0f,
+        0.5f, -0.5f, 0.0f,
+        0.0f, 0.5f, 0.0f
+    };
+
+    VertexBufferObject vbo;
+    vbo.Write(vertices);
+
+    vao.SetAttributePointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+    vao.EnableAttribute(0);
+
+    auto resourcePath = std::filesystem::path(__FILE__).parent_path() / ".." / "resources";
+    auto shaderPath = resourcePath / "shaders";
+    Shader shader((shaderPath / "simple_triangle.vert").generic_string(), (shaderPath / "simple_triangle.frag").generic_string());
+
     // Our state
     bool show_demo_window = true;
     ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
@@ -159,6 +184,10 @@ int main(int, char**)
         glClearColor(clear_color.x * clear_color.w, clear_color.y * clear_color.w, clear_color.z * clear_color.w, clear_color.w);
         glClear(GL_COLOR_BUFFER_BIT);
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+
+        shader.Use();
+        vao.Bind();
+        glDrawArrays(GL_TRIANGLES, 0, 3);
 
         glfwSwapBuffers(window);
     }
