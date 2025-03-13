@@ -83,7 +83,6 @@ int main(int, char**)
 
     // Setup Dear ImGui style
     ImGui::StyleColorsDark();
-    //ImGui::StyleColorsLight();
 
     // Setup Platform/Renderer backends
     ImGui_ImplGlfw_InitForOpenGL(window, true);
@@ -106,6 +105,23 @@ int main(int, char**)
     //ImFont* font = io.Fonts->AddFontFromFileTTF("c:\\Windows\\Fonts\\ArialUni.ttf", 18.0f, nullptr, io.Fonts->GetGlyphRangesJapanese());
     //IM_ASSERT(font != nullptr);
 
+    unsigned int frameBuffer;
+    glGenFramebuffers(1, &frameBuffer);
+    glBindFramebuffer(GL_FRAMEBUFFER, frameBuffer);
+
+    unsigned int textureColorBuffer;
+    glGenTextures(1, &textureColorBuffer);
+    glBindTexture(GL_TEXTURE_2D, textureColorBuffer);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glBindTexture(GL_TEXTURE_2D, 0);
+
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, textureColorBuffer, 0);
+
+    if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+        std::cout << "ERROR::FRAMEBUFFER:: Framebuffer is not complete!" << std::endl;
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
     VertexArrayObject vao;
     vao.Bind();
 
@@ -123,7 +139,7 @@ int main(int, char**)
 
     auto resourcePath = std::filesystem::path(__FILE__).parent_path() / ".." / "resources";
     auto shaderPath = resourcePath / "shaders";
-    Shader shader((shaderPath / "simple_triangle.vert").generic_string(), (shaderPath / "simple_triangle.frag").generic_string());
+    Shader triangleShader((shaderPath / "simple_triangle.vert").generic_string(), (shaderPath / "simple_triangle.frag").generic_string());
 
     // Our state
     bool show_demo_window = true;
@@ -149,17 +165,17 @@ int main(int, char**)
         ImGui_ImplGlfw_NewFrame();
         ImGui::NewFrame();
 
-        // // 1. Show the big demo window (Most of the sample code is in ImGui::ShowDemoWindow()! You can browse its code to learn more about Dear ImGui!).
-        // if (show_demo_window)
-        //     ImGui::ShowDemoWindow(&show_demo_window);
+        const float hierarchyWidth = 250;
+        const float hierarchyHeight = 450;
 
+        // Hierarchy
         {
             static float f = 0.0f;
             static int counter = 0;
 
             ImGui::SetNextWindowPos(ImVec2(0, 0));
-            ImGui::SetNextWindowSize(ImVec2(300, 450));
-            ImGui::Begin("Hierarchy", NULL, ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoSavedSettings);
+            ImGui::SetNextWindowSize(ImVec2(hierarchyWidth, hierarchyHeight));
+            ImGui::Begin("Hierarchy", NULL, ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoResize);
 
             ImGui::Text("This is some useful text.");               // Display some text (you can use a format strings too)
             ImGui::Checkbox("Demo Window", &show_demo_window);      // Edit bools storing our window open/close state
@@ -176,18 +192,45 @@ int main(int, char**)
             ImGui::End();
         }
 
-        // Rendering
+        // Viewport
+        const float viewportWndW = 700;
+        const float viewportWndH = 450;
+        ImGui::SetNextWindowPos(ImVec2(hierarchyWidth, 0));
+        ImGui::SetNextWindowSize(ImVec2(viewportWndW, viewportWndH));
+        ImGui::Begin("Viewport", NULL, ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoResize);
+
+        const auto viewportSize = ImGui::GetContentRegionAvail();
+        ImGui::Image((ImTextureID)textureColorBuffer, viewportSize, ImVec2(0.0f, 1.0f), ImVec2(1.0f, 0.0f));
+
+        ImGui::End();
+
+        // Resizing Frame buffer texture
+        glBindTexture(GL_TEXTURE_2D, textureColorBuffer);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, viewportSize.x, viewportSize.y, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
+        glBindTexture(GL_TEXTURE_2D, 0);
+
+        // Framebuffer texture rendering
+        glBindFramebuffer(GL_FRAMEBUFFER, frameBuffer);
+        glViewport(0, 0, viewportSize.x, viewportSize.y);
+        glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
+        glClear(GL_COLOR_BUFFER_BIT);
+
+        // Drawing simple triangle
+        {
+            triangleShader.Use();
+            vao.Bind();
+            glDrawArrays(GL_TRIANGLES, 0, 3);
+        }
+
+        glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+
+        // Main Window Rendering
         ImGui::Render();
         int display_w, display_h;
         glfwGetFramebufferSize(window, &display_w, &display_h);
         glViewport(0, 0, display_w, display_h);
-        glClearColor(clear_color.x * clear_color.w, clear_color.y * clear_color.w, clear_color.z * clear_color.w, clear_color.w);
-        glClear(GL_COLOR_BUFFER_BIT);
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
-
-        shader.Use();
-        vao.Bind();
-        glDrawArrays(GL_TRIANGLES, 0, 3);
 
         glfwSwapBuffers(window);
     }
