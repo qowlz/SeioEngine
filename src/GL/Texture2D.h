@@ -17,15 +17,17 @@ public:
     Texture2D(Texture2D&& other) noexcept;
     Texture2D& operator=(Texture2D&& other) noexcept;
 
-    Texture2D(const std::string& path, GLint format, GLenum fileFormat);
+    Texture2D(const std::string& pathStr);
     ~Texture2D();
 
-    void bind(GLenum unit);
+    void Bind(GLenum unit);
 
-    int getWidth() const { return width; }
-    int getHeight() const { return height; }
+    int GetWidth() const { return width; }
+    int GetHeight() const { return height; }
 
 private:
+    void Init(const std::string& path, GLint format, GLenum fileFormat);
+
     GLuint id;
-    int width, height;
+    int width = 0, height = 0;
 };

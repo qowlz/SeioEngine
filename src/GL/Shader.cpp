@@ -1,7 +1,13 @@
 #include "GL/Shader.h"
 
-Shader::Shader(const std::string& vertexPath, const std::string& fragmentPath)
+Shader::Shader(const std::string& vsName, const std::string& fsName)
 {
+
+   auto shaderPath = std::filesystem::path(__FILE__).parent_path() / ".." / ".." / "resources" / "shaders";
+
+   std::string vertexPath = (shaderPath / vsName).generic_string();
+   std::string fragmentPath = (shaderPath / fsName).generic_string();
+
    // read shader files
    // TODO: Consider creating a file I/O utility class
    std::string vertexCode, fragmentCode;

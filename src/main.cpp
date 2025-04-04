@@ -7,20 +7,22 @@
 // - Documentation        https://dearimgui.com/docs (same as your local docs/ folder).
 // - Introduction, links and more at the top of imgui.cpp
 
+#include <iostream>
+#include <vector>
+#include <filesystem>
+
 #include "imgui.h"
 #include "imgui_impl_glfw.h"
 #include "imgui_impl_opengl3.h"
 
-#include "GL/VertexArrayObject.h"
-#include "GL/VertexBufferObject.h"
-#include "GL/Shader.h"
-
-#include <iostream>
-#include <vector>
-#include <filesystem>
 #define GL_SILENCE_DEPRECATION
 #include <glad/glad.h>
 #include <GLFW/glfw3.h> // Will drag system OpenGL headers
+
+#include "GL/VertexArrayObject.h"
+#include "GL/VertexBufferObject.h"
+#include "GL/Shader.h"
+#include "Seio/Sprite.h"
 
 static void glfw_error_callback(int error, const char* description)
 {
@@ -112,6 +114,7 @@ int main(int, char**)
     unsigned int textureColorBuffer;
     glGenTextures(1, &textureColorBuffer);
     glBindTexture(GL_TEXTURE_2D, textureColorBuffer);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, 1, 1, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL); // 처음에 texture size를 안정해주면 프레임 버퍼 세팅 체크 쪽에서 에러가 나기때문에 적당한 사이즈로 세팅
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     glBindTexture(GL_TEXTURE_2D, 0);
@@ -122,27 +125,9 @@ int main(int, char**)
         std::cout << "ERROR::FRAMEBUFFER:: Framebuffer is not complete!" << std::endl;
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
-    VertexArrayObject vao;
-    vao.Bind();
-
-    std::vector<float> vertices {
-        -0.5f, -0.5f, 0.0f,
-        0.5f, -0.5f, 0.0f,
-        0.0f, 0.5f, 0.0f
-    };
-
-    VertexBufferObject vbo;
-    vbo.Write(vertices);
-
-    vao.SetAttributePointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
-    vao.EnableAttribute(0);
-
-    auto resourcePath = std::filesystem::path(__FILE__).parent_path() / ".." / "resources";
-    auto shaderPath = resourcePath / "shaders";
-    Shader triangleShader((shaderPath / "simple_triangle.vert").generic_string(), (shaderPath / "simple_triangle.frag").generic_string());
+    Seio::Sprite sprite { "/Users/byunguk/Dev/SeioEngine/resources/textures/test.png" };
 
     // Our state
-    bool show_demo_window = true;
     ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
 
     // Main loop
@@ -178,7 +163,6 @@ int main(int, char**)
             ImGui::Begin("Hierarchy", NULL, ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoResize);
 
             ImGui::Text("This is some useful text.");               // Display some text (you can use a format strings too)
-            ImGui::Checkbox("Demo Window", &show_demo_window);      // Edit bools storing our window open/close state
 
             ImGui::SliderFloat("float", &f, 0.0f, 1.0f);            // Edit 1 float using a slider from 0.0f to 1.0f
             ImGui::ColorEdit3("clear color", (float*)&clear_color); // Edit 3 floats representing a color
@@ -215,15 +199,10 @@ int main(int, char**)
         glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
 
-        // Drawing simple triangle
-        {
-            triangleShader.Use();
-            vao.Bind();
-            glDrawArrays(GL_TRIANGLES, 0, 3);
-        }
+        // Drawing sprite
+        sprite.GetRenderer()->Draw();
 
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
-
 
         // Main Window Rendering
         ImGui::Render();

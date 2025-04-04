@@ -3,10 +3,11 @@
 #include "GL/Texture2D.h"
 
 #include <iostream>
+#include <filesystem>
 
 Texture2D::Texture2D() : id(0) {}
 
-Texture2D::Texture2D(const std::string& path, GLint format, GLenum fileFormat)
+void Texture2D::Init(const std::string& path, GLint format, GLenum fileFormat)
 {
     glGenTextures(1, &this->id);
     glBindTexture(GL_TEXTURE_2D, this->id);
@@ -15,10 +16,13 @@ Texture2D::Texture2D(const std::string& path, GLint format, GLenum fileFormat)
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
+    // FIXME: 나중에 한번만 호출되도록 옮기면 좋을듯?
     stbi_set_flip_vertically_on_load(true);
 
     int width, height, nChannels;
     unsigned char *data = stbi_load(path.c_str(), &width, &height, &nChannels, 0);
+
+    if (nChannels == 4) format = fileFormat = GL_RGBA;
 
     if (data)
     {
@@ -32,13 +36,17 @@ Texture2D::Texture2D(const std::string& path, GLint format, GLenum fileFormat)
     }
     else
     {
-        this->width = 0;
-        this->height = 0;
         std::cerr << "Failed to load texture: " << path << std::endl;
         std::cerr << "STB Error: " << stbi_failure_reason() << std::endl;
     }
 
     stbi_image_free(data);
+    glBindTexture(GL_TEXTURE_2D, 0);
+}
+
+Texture2D::Texture2D(const std::string& pathStr)
+{
+    Init(pathStr, GL_RGB, GL_RGB);
 }
 
 Texture2D::~Texture2D()
@@ -50,7 +58,7 @@ Texture2D::~Texture2D()
     }
 }
 
-void Texture2D::bind(GLenum unit)
+void Texture2D::Bind(GLenum unit)
 {
     glActiveTexture(unit);
     glBindTexture(GL_TEXTURE_2D, this->id);

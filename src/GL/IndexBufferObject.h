@@ -12,11 +12,11 @@ public:
     IndexBufferObject(const IndexBufferObject&) = delete;
     IndexBufferObject& operator=(const IndexBufferObject&) = delete;
 
-    void bind() const;
+    void Bind() const;
 
-    void unbind() const;
+    void UnBind() const;
 
-    void write(const std::vector<float>& indices);
+    void Write(const std::vector<unsigned int>& indices);
 
 private:
     GLuint id;

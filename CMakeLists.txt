@@ -8,6 +8,13 @@ add_executable(${PROJECT_NAME}
     src/GL/VertexArrayObject.cpp
     src/GL/VertexBufferObject.cpp
     src/GL/Shader.cpp
+    src/GL/IndexBufferObject.cpp
+    src/GL/Texture2D.cpp
+
+    # Seio class
+    src/Seio/GameObject.cpp
+    src/Seio/Sprite.cpp
+    src/Seio/SpriteRenderer.cpp
 
     # glad
     vendor/glad/src/glad.c

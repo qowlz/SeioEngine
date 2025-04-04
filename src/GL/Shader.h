@@ -12,7 +12,7 @@
 class Shader
 {
 public:
-    Shader(const std::string& vertexPath, const std::string& fragmentPath);
+    Shader(const std::string& vsName, const std::string& fsName);
     ~Shader();
 
     void SetFloat(const std::string& name, float value) const

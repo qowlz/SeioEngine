@@ -10,17 +10,17 @@ IndexBufferObject::~IndexBufferObject()
     glDeleteBuffers(1, &this->id);
 }
 
-void IndexBufferObject::bind() const
+void IndexBufferObject::Bind() const
 {
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this->id);
 }
 
-void IndexBufferObject::unbind() const
+void IndexBufferObject::UnBind() const
 {
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 }
 
-void IndexBufferObject::write(const std::vector<float>& indices)
+void IndexBufferObject::Write(const std::vector<unsigned int>& indices)
 {
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(float), indices.data(), GL_STATIC_DRAW);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(unsigned int), indices.data(), GL_STATIC_DRAW);
 }
