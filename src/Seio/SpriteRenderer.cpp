@@ -39,11 +39,15 @@ namespace Seio
         this->ibo.UnBind();
     }
 
-    void SpriteRenderer::Draw()
+    void SpriteRenderer::Draw(glm::mat4 trM)
     {
         this->shader.Use();
+
+        // Bind texture
         this->shader.SetInt("MainTex", 0);
         this->mainTexture.Bind(GL_TEXTURE0);
+
+        this->shader.SetMatrix4f("transform", trM);
 
         this->vao.Bind();
         this->ibo.Bind();

@@ -126,6 +126,9 @@ int main(int, char**)
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
     Seio::Sprite sprite { "/Users/byunguk/Dev/SeioEngine/resources/textures/test.png" };
+    sprite.GetTransform()->SetPosition(0.5f, 0, 0);
+    sprite.GetTransform()->SetRotation(0, 0, 10.0f);
+    sprite.GetTransform()->SetScale(2.0f, 1.0f, 1.0f);
 
     // Our state
     ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
@@ -200,7 +203,7 @@ int main(int, char**)
         glClear(GL_COLOR_BUFFER_BIT);
 
         // Drawing sprite
-        sprite.GetRenderer()->Draw();
+        sprite.GetRenderer()->Draw(sprite.GetTransform()->GetMatrix());
 
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
