@@ -22,6 +22,8 @@
 #include "GL/VertexArrayObject.h"
 #include "GL/VertexBufferObject.h"
 #include "GL/Shader.h"
+#include "GL/Camera2D.h"
+
 #include "Seio/Sprite.h"
 
 static void glfw_error_callback(int error, const char* description)
@@ -126,9 +128,11 @@ int main(int, char**)
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
     Seio::Sprite sprite { "/Users/byunguk/Dev/SeioEngine/resources/textures/test.png" };
-    sprite.GetTransform()->SetPosition(0.5f, 0, 0);
-    sprite.GetTransform()->SetRotation(0, 0, 10.0f);
-    sprite.GetTransform()->SetScale(2.0f, 1.0f, 1.0f);
+    // sprite.GetTransform()->SetPosition(0.5f, 0, 0);
+    // sprite.GetTransform()->SetRotation(0, 0, 10.0f);
+    // sprite.GetTransform()->SetScale(2.0f, 1.0f, 1.0f);
+
+    Camera2D cam {{0, 0}, 2, 2};
 
     // Our state
     ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
@@ -203,7 +207,8 @@ int main(int, char**)
         glClear(GL_COLOR_BUFFER_BIT);
 
         // Drawing sprite
-        sprite.GetRenderer()->Draw(sprite.GetTransform()->GetMatrix());
+        auto mvp = cam.GetProjectionM() * cam.GetViewM() * sprite.GetTransform()->GetMatrix();
+        sprite.GetRenderer()->Draw(mvp);
 
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
 

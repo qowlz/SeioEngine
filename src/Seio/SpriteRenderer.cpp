@@ -39,7 +39,7 @@ namespace Seio
         this->ibo.UnBind();
     }
 
-    void SpriteRenderer::Draw(glm::mat4 trM)
+    void SpriteRenderer::Draw(glm::mat4 mvp)
     {
         this->shader.Use();
 
@@ -47,7 +47,7 @@ namespace Seio
         this->shader.SetInt("MainTex", 0);
         this->mainTexture.Bind(GL_TEXTURE0);
 
-        this->shader.SetMatrix4f("transform", trM);
+        this->shader.SetMatrix4f("mvp", mvp);
 
         this->vao.Bind();
         this->ibo.Bind();

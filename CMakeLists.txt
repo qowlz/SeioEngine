@@ -10,6 +10,7 @@ add_executable(${PROJECT_NAME}
     src/GL/Shader.cpp
     src/GL/IndexBufferObject.cpp
     src/GL/Texture2D.cpp
+    src/GL/Camera2D.cpp
 
     # Seio class
     src/Seio/GameObject.cpp

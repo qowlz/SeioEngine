@@ -20,7 +20,7 @@ namespace Seio
 
         SpriteRenderer(const std::string &texturePath);
 
-        void Draw(glm::mat4 trM) override;
+        void Draw(glm::mat4 mvp) override;
 
     private:
         Texture2D mainTexture;

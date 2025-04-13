@@ -7,6 +7,6 @@ namespace Seio
     class Renderer
     {
         public:
-            virtual void Draw(glm::mat4 trM)= 0;
+            virtual void Draw(glm::mat4 mvp)= 0;
     };
 }

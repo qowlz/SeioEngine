@@ -6,9 +6,11 @@
 class Camera2D
 {
 public:
+    Camera2D() = delete;
+
     Camera2D(glm::vec2 position, int width, int height);
-    glm::mat4 getViewMatrix() const;
-    glm::mat4 getProjectionMatrix() const;
+    glm::mat4 GetViewM() const;
+    glm::mat4 GetProjectionM() const;
 
 private:
     glm::vec3 position;
