@@ -23,8 +23,8 @@
 #include "GL/VertexBufferObject.h"
 #include "GL/Shader.h"
 #include "GL/Camera2D.h"
-
 #include "Seio/Sprite.h"
+#include "Seio/GameObject.h"
 
 static void glfw_error_callback(int error, const char* description)
 {
@@ -34,6 +34,9 @@ static void glfw_error_callback(int error, const char* description)
 // Main code
 int main(int, char**)
 {
+    using namespace Seio;
+    using namespace std;
+
     glfwSetErrorCallback(glfw_error_callback);
     if (!glfwInit())
         return 1;
@@ -64,7 +67,7 @@ int main(int, char**)
 #endif
 
     // Create window with graphics context
-    GLFWwindow* window = glfwCreateWindow(1280, 720, "Dear ImGui GLFW+OpenGL3 example", nullptr, nullptr);
+    GLFWwindow* window = glfwCreateWindow(1280, 720, "Seio", nullptr, nullptr);
     if (window == nullptr)
         return 1;
     glfwMakeContextCurrent(window);
@@ -127,7 +130,7 @@ int main(int, char**)
         std::cout << "ERROR::FRAMEBUFFER:: Framebuffer is not complete!" << std::endl;
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
-    Seio::Sprite sprite { "/Users/byunguk/Dev/SeioEngine/resources/textures/test.png" };
+    // Seio::Sprite sprite { "/Users/byunguk/Dev/SeioEngine/resources/textures/test.png" };
     // sprite.GetTransform()->SetPosition(0.5f, 0, 0);
     // sprite.GetTransform()->SetRotation(0, 0, 10.0f);
     // sprite.GetTransform()->SetScale(2.0f, 1.0f, 1.0f);
@@ -138,6 +141,7 @@ int main(int, char**)
     ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
 
     // Main loop
+    vector<GameObject> goList; // TODO: 아마 나중에는 SceneSystem이나 SceneManager가 관리하게 두면될듯?
     while (!glfwWindowShouldClose(window))
     {
         // Poll and handle events (inputs, window resize, etc.)
@@ -162,24 +166,24 @@ int main(int, char**)
 
         // Hierarchy
         {
-            static float f = 0.0f;
-            static int counter = 0;
-
             ImGui::SetNextWindowPos(ImVec2(0, 0));
             ImGui::SetNextWindowSize(ImVec2(hierarchyWidth, hierarchyHeight));
             ImGui::Begin("Hierarchy", NULL, ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoResize);
 
-            ImGui::Text("This is some useful text.");               // Display some text (you can use a format strings too)
+            for (const auto& go : goList)
+                ImGui::Selectable("Sprite");
 
-            ImGui::SliderFloat("float", &f, 0.0f, 1.0f);            // Edit 1 float using a slider from 0.0f to 1.0f
-            ImGui::ColorEdit3("clear color", (float*)&clear_color); // Edit 3 floats representing a color
+            if (ImGui::BeginPopupContextItem("hierarchy/create/popup"))
+            {
+                ImGui::Selectable("GameObject");
+                if(ImGui::Selectable("Sprite"))
+                    goList.push_back(Sprite { "/Users/byunguk/Dev/SeioEngine/resources/textures/test.png" }); // 아마 복사를 할텐데..
+                ImGui::EndPopup();
+            }
 
-            if (ImGui::Button("Button"))                            // Buttons return true when clicked (most widgets return true when edited/activated)
-                counter++;
-            ImGui::SameLine();
-            ImGui::Text("counter = %d", counter);
+            if (ImGui::Button("Create", ImVec2(ImGui::GetContentRegionAvail().x, 0)))
+                ImGui::OpenPopup("hierarchy/create/popup");
 
-            ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / io.Framerate, io.Framerate);
             ImGui::End();
         }
 
@@ -206,9 +210,12 @@ int main(int, char**)
         glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
 
-        // Drawing sprite
-        auto mvp = cam.GetProjectionM() * cam.GetViewM() * sprite.GetTransform()->GetMatrix();
-        sprite.GetRenderer()->Draw(mvp);
+        // Drawing all gameobjects
+        for (const auto& go : goList)
+        {
+            auto mvp = cam.GetProjectionM() * cam.GetViewM() * go.GetTransform()->GetMatrix();
+            go.GetRenderer()->Draw(mvp);
+        }
 
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
