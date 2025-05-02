@@ -6,6 +6,22 @@ namespace Seio
         : transform { std::make_unique<Transform>() }
     {
     }
+
+    void GameObject::Update(float dt)
+    {
+        for (auto& comp : components)
+        {
+            comp->Update(dt);
+        }
+    }
+
+    GameObject::~GameObject()
+    {
+        for (auto comp : components)
+            delete comp;
+
+        components.clear();
+    }
 }
 
 

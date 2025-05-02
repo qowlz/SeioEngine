@@ -4,6 +4,7 @@
 
 #include "Transform.h"
 #include "Renderer.h"
+#include "Component.h"
 
 namespace Seio
 {
@@ -11,6 +12,15 @@ namespace Seio
     {
         public:
             GameObject();
+
+            virtual ~GameObject();
+
+            void Update(float dt);
+
+            void AddComponent(Component* comp)
+            {
+                components.push_back(comp);
+            }
 
             Transform* GetTransform() const
             {
@@ -22,9 +32,16 @@ namespace Seio
                 return renderer.get();
             }
 
+            const std::vector<Component*>& GetComponents() const
+            {
+                return components;
+            }
+
         protected:
             std::unique_ptr<Transform> transform;
 
             std::unique_ptr<Renderer> renderer;
+
+            std::vector<Component*> components;
     };
 }

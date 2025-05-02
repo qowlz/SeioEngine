@@ -25,6 +25,7 @@
 #include "GL/Camera2D.h"
 #include "Seio/Sprite.h"
 #include "Seio/GameObject.h"
+#include "Seio/GameObjectManager.h"
 
 static void glfw_error_callback(int error, const char* description)
 {
@@ -141,7 +142,6 @@ int main(int, char**)
     ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
 
     // Main loop
-    vector<GameObject> goList; // TODO: 아마 나중에는 SceneSystem이나 SceneManager가 관리하게 두면될듯?
     while (!glfwWindowShouldClose(window))
     {
         // Poll and handle events (inputs, window resize, etc.)
@@ -170,14 +170,14 @@ int main(int, char**)
             ImGui::SetNextWindowSize(ImVec2(hierarchyWidth, hierarchyHeight));
             ImGui::Begin("Hierarchy", NULL, ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoResize);
 
-            for (const auto& go : goList)
+            for (const auto& _ : GameObjectManager::Instance().GetAllObjects())
                 ImGui::Selectable("Sprite");
 
             if (ImGui::BeginPopupContextItem("hierarchy/create/popup"))
             {
                 ImGui::Selectable("GameObject");
                 if(ImGui::Selectable("Sprite"))
-                    goList.push_back(Sprite { "/Users/byunguk/Dev/SeioEngine/resources/textures/test.png" }); // 아마 복사를 할텐데..
+                    GameObjectManager::Instance().CreateSprite("/Users/byunguk/Dev/SeioEngine/resources/textures/test.png");
                 ImGui::EndPopup();
             }
 
@@ -199,6 +199,23 @@ int main(int, char**)
 
         ImGui::End();
 
+
+        // Component Viewer
+        const float componentViewW = 330;
+        const float componentViewH = 450;
+        ImGui::SetNextWindowPos(ImVec2(hierarchyWidth + viewportWndW, 0));
+        ImGui::SetNextWindowSize(ImVec2(componentViewW, componentViewH));
+        ImGui::Begin("Components", NULL, ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoResize);
+
+        // drawing all components of selected GO
+        // for ()
+
+        ImGui::End();
+
+
+        ImGui::SetNextWindowPos(ImVec2(hierarchyWidth, 0));
+
+
         // Resizing Frame buffer texture
         glBindTexture(GL_TEXTURE_2D, textureColorBuffer);
         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, viewportSize.x, viewportSize.y, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
@@ -211,10 +228,12 @@ int main(int, char**)
         glClear(GL_COLOR_BUFFER_BIT);
 
         // Drawing all gameobjects
-        for (const auto& go : goList)
+        // TODO: mvp는 어디서 받지?
+        for (const auto& ptr : GameObjectManager::Instance().GetAllObjects())
         {
-            auto mvp = cam.GetProjectionM() * cam.GetViewM() * go.GetTransform()->GetMatrix();
-            go.GetRenderer()->Draw(mvp);
+            const auto& go = ptr.get();
+            auto mvp = cam.GetProjectionM() * cam.GetViewM() * go->GetTransform()->GetMatrix();
+            go->GetRenderer()->Draw(mvp);
         }
 
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
