@@ -142,6 +142,7 @@ int main(int, char**)
     ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
 
     // Main loop
+    GameObject* selectedGO = nullptr;
     while (!glfwWindowShouldClose(window))
     {
         // Poll and handle events (inputs, window resize, etc.)
@@ -170,14 +171,22 @@ int main(int, char**)
             ImGui::SetNextWindowSize(ImVec2(hierarchyWidth, hierarchyHeight));
             ImGui::Begin("Hierarchy", NULL, ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoResize);
 
-            for (const auto& _ : GameObjectManager::Instance().GetAllObjects())
-                ImGui::Selectable("Sprite");
+            int order = 1;
+            for (const auto& ptr : GameObjectManager::Instance().GetAllObjects())
+            {
+
+                string itemName = "Sprite" + to_string(order++);
+                if (ImGui::Selectable(itemName.c_str(), selectedGO == ptr.get()))
+                    selectedGO = ptr.get();
+            }
 
             if (ImGui::BeginPopupContextItem("hierarchy/create/popup"))
             {
                 ImGui::Selectable("GameObject");
                 if(ImGui::Selectable("Sprite"))
+                {
                     GameObjectManager::Instance().CreateSprite("/Users/byunguk/Dev/SeioEngine/resources/textures/test.png");
+                }
                 ImGui::EndPopup();
             }
 
