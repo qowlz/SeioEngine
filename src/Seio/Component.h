@@ -6,8 +6,8 @@ namespace Seio
     {
         public:
             virtual ~Component() = default;
-            virtual void OnDrawImGui() = 0;
+            virtual void OnDrawImGui() {}
 
-            virtual void Update(float dt) = 0;
+            virtual void Update(float dt) {}
     };
 }

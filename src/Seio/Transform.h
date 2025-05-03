@@ -8,9 +8,11 @@
 // #define GLM_ENABLE_EXPERIMENTAL
 // #include <glm/gtx/string_cast.hpp>
 
+#include "Component.h"
+
 namespace Seio
 {
-    class Transform
+    class Transform : public Component
     {
         public:
             Transform()
@@ -66,6 +68,8 @@ namespace Seio
             {
                 this->scale = glm::vec3(x, y, z);
             }
+
+            void OnDrawImGui() override;
 
         private:
             glm::vec3 position;

@@ -208,7 +208,6 @@ int main(int, char**)
 
         ImGui::End();
 
-
         // Component Viewer
         const float componentViewW = 330;
         const float componentViewH = 450;
@@ -217,10 +216,15 @@ int main(int, char**)
         ImGui::Begin("Components", NULL, ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoResize);
 
         // drawing all components of selected GO
-        // for ()
+        if (selectedGO)
+        {
+            for (const auto& comp : selectedGO->GetComponents())
+            {
+                comp->OnDrawImGui();
+            }
+        }
 
         ImGui::End();
-
 
         ImGui::SetNextWindowPos(ImVec2(hierarchyWidth, 0));
 
