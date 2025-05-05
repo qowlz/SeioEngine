@@ -2,9 +2,11 @@
 
 #include <glm/glm.hpp>
 
+#include "Component.h"
+
 namespace Seio
 {
-    class Renderer
+    class Renderer : public Component
     {
         public:
             virtual ~Renderer() = default;
