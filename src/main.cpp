@@ -226,7 +226,7 @@ int main(int, char**)
 
         ImGui::End();
 
-        ImGui::SetNextWindowPos(ImVec2(hierarchyWidth, 0));
+        // ImGui::SetNextWindowPos(ImVec2(hierarchyWidth, 0));
 
 
         // Resizing Frame buffer texture
