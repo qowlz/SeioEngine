@@ -39,6 +39,8 @@ public:
                     value.x, value.y, value.z, value.w);
     }
 
+    GLuint GetID() const { return id; }
+
     void Use()
     {
         glUseProgram(this->id);

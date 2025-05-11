@@ -9,6 +9,7 @@
 #include "GL/VertexBufferObject.h"
 #include "GL/IndexBufferObject.h"
 #include "GL/Shader.h"
+#include "RenderSystem.h"
 
 namespace Seio
 {
@@ -21,6 +22,8 @@ namespace Seio
         SpriteRenderer(const std::string &texturePath);
 
         void Draw(glm::mat4 mvp) override;
+
+        void Update(float dt) override;
 
     private:
         Texture2D mainTexture;

@@ -17,6 +17,8 @@ add_executable(${PROJECT_NAME}
     src/Seio/Sprite.cpp
     src/Seio/SpriteRenderer.cpp
     src/Seio/Transform.cpp
+    src/Seio/Global.cpp
+    src/Seio/RenderSystem.cpp
 
     # glad
     vendor/glad/src/glad.c

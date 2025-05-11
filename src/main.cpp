@@ -26,6 +26,7 @@
 #include "Seio/Sprite.h"
 #include "Seio/GameObject.h"
 #include "Seio/GameObjectManager.h"
+#include "Seio/Global.h"
 
 static void glfw_error_callback(int error, const char* description)
 {
@@ -136,6 +137,7 @@ int main(int, char**)
     // sprite.GetTransform()->SetRotation(0, 0, 10.0f);
     // sprite.GetTransform()->SetScale(2.0f, 1.0f, 1.0f);
 
+    mainCam = new Camera2D {{0, 0}, 2, 2};
     Camera2D cam {{0, 0}, 2, 2};
 
     // Our state
@@ -261,10 +263,13 @@ int main(int, char**)
         glfwSwapBuffers(window);
     }
 
-    // Cleanup
+    // ImGui Cleanup
     ImGui_ImplOpenGL3_Shutdown();
     ImGui_ImplGlfw_Shutdown();
     ImGui::DestroyContext();
+
+    // other resources cleanup
+    delete mainCam;
 
     glfwDestroyWindow(window);
     glfwTerminate();

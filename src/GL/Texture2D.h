@@ -24,6 +24,7 @@ public:
 
     int GetWidth() const { return width; }
     int GetHeight() const { return height; }
+    GLuint GetID() const { return id; }
 
 private:
     void Init(const std::string& path, GLint format, GLenum fileFormat);

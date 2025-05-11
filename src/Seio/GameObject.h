@@ -19,6 +19,7 @@ namespace Seio
 
             void AddComponent(Component* comp)
             {
+                comp->SetOwner(this);
                 components.push_back(comp);
             }
 
