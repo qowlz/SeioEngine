@@ -27,6 +27,7 @@
 #include "Seio/GameObject.h"
 #include "Seio/GameObjectManager.h"
 #include "Seio/Global.h"
+#include "Seio/RenderSystem.h"
 
 static void glfw_error_callback(int error, const char* description)
 {
@@ -230,6 +231,13 @@ int main(int, char**)
 
         // ImGui::SetNextWindowPos(ImVec2(hierarchyWidth, 0));
 
+        for (const auto& ptr : GameObjectManager::Instance().GetAllObjects())
+        {
+            for (const auto& comp : ptr.get()->GetComponents())
+            {
+                comp->Update(0.0f); // FIXME: deltaTime을 나중에 넘겨줄것
+            }
+        }
 
         // Resizing Frame buffer texture
         glBindTexture(GL_TEXTURE_2D, textureColorBuffer);
@@ -243,13 +251,15 @@ int main(int, char**)
         glClear(GL_COLOR_BUFFER_BIT);
 
         // Drawing all gameobjects
-        // TODO: mvp는 어디서 받지?
-        for (const auto& ptr : GameObjectManager::Instance().GetAllObjects())
-        {
-            const auto& go = ptr.get();
-            auto mvp = cam.GetProjectionM() * cam.GetViewM() * go->GetTransform()->GetMatrix();
-            go->GetRenderer()->Draw(mvp);
-        }
+        RenderSystem::Instance().Render();
+
+        // // // TODO: mvp는 어디서 받지?
+        // for (const auto& ptr : GameObjectManager::Instance().GetAllObjects())
+        // {
+        //     const auto& go = ptr.get();
+        //     auto mvp = cam.GetProjectionM() * cam.GetViewM() * go->GetTransform()->GetMatrix();
+        //     go->GetRenderer()->Draw(mvp);
+        // }
 
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
