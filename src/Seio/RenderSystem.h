@@ -1,6 +1,6 @@
 #pragma once
 
-#include <queue>
+#include <unordered_map>
 
 #include "glad/glad.h"
 #include "glm/glm.hpp"
@@ -10,42 +10,20 @@
 #include "GL/VertexArrayObject.h"
 #include "GL/VertexBufferObject.h"
 #include "GL/IndexBufferObject.h"
+#include "Batch.h"
 
 namespace Seio
 {
-    struct Vertex
-    {
-        glm::vec3 pos;
-        glm::vec2 texCoord;
-    };
-
-
-    struct DrawCall
-    {
-        GLuint textureID;
-        GLuint shaderID;
-        glm::mat4 mvp;
-    };
-
     class RenderSystem : public Singleton<RenderSystem>
     {
         public:
-            RenderSystem();
+            RenderSystem() = default;
 
             void Render();
 
             void RequestDrawQuad(GLuint textureID, GLuint shaderID, glm::mat4 mvp);
 
         private:
-            // std::queue<DrawCall> renderQueue;
-
-            VertexArrayObject vao;
-
-            VertexBufferObject vbo;
-
-            IndexBufferObject ibo;
-
-            GLintptr vertexBufferOffset = 0;
-            GLintptr indexBufferOffset = 0;
+            std::unordered_map<GLuint, Batch> batchMap;
     };
 }
