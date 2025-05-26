@@ -1,28 +1,92 @@
 #include "RenderSystem.h"
 
 #include "Vertex.h"
+#include "ShaderManager.h"
+
+#include <iostream>
+
+void PrintVBO(GLuint vbo, int count) {
+    glBindBuffer(GL_ARRAY_BUFFER, vbo);
+
+    // 데이터 받을 공간 할당
+    std::vector<Seio::Vertex> vertices(count);
+
+    // GPU → CPU로 데이터 복사
+    glGetBufferSubData(GL_ARRAY_BUFFER, 0, vertices.size() * sizeof(Seio::Vertex), vertices.data());
+
+    // 출력
+    std::cout << "VBO Contents: " << std::endl;
+    for (int i = 0; i < count / 4; i++)
+    {
+        std::cout << "\tquad " << i + 1 << ": " << std::endl;
+
+        for (int j = 0; j < 4; j++)
+        {
+            std::cout << "\t\tvertex " << i + 1 << ": ";
+            int idx = 4 * i + j;
+            std::cout << vertices[idx].pos.x << ' ' << vertices[idx].pos.y << ' ' << vertices[idx].pos.z << std::endl;
+        }
+    }
+
+    std::cout << std::endl;
+}
+
+void PrintIBO(GLuint ibo, int count) {
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
+
+    // 데이터 받을 공간 할당
+    std::vector<unsigned int> indices(count);
+
+    // GPU → CPU로 데이터 복사
+    glGetBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, indices.size() * sizeof(unsigned int), indices.data());
+
+    // 출력
+    std::cout << "IBO Contents: ";
+    for (GLuint index : indices) {
+        std::cout << index << " ";
+    }
+    std::cout << std::endl;
+}
 
 namespace Seio
 {
     void RenderSystem::Render()
     {
-        for (const auto& [shaderID, batch] : batchMap)
+        for (auto& [mat, batch] : batchMap)
         {
-            glUseProgram(shaderID);
+            glUseProgram(mat.shaderID);
+
+            glUniform1i(glGetUniformLocation(mat.shaderID, "MainTex"), 0);
+
+            auto it = textureMap.find(mat.textureName);
+            if (it != textureMap.end())
+                it->second.Bind(GL_TEXTURE0);
 
             glBindVertexArray(batch.GetVAO());
             glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, batch.GetIBO());
 
-            glDrawElements(GL_TRIANGLES, batch.GetElementsSize(), GL_UNSIGNED_INT, 0);
-        }
+            // PrintVBO(batch.GetVBO(), 8);
+            // PrintIBO(batch.GetIBO(), batch.GetElementCount());
 
-        batchMap.clear();
+            glDrawElements(GL_TRIANGLES, batch.GetElementCount(), GL_UNSIGNED_INT, 0);
+
+            batch.Clear();
+        }
     }
 
-    void RenderSystem::RequestDrawQuad(GLuint textureID, GLuint shaderID, glm::mat4 mvp)
+    void RenderSystem::RequestDrawQuad(const Material& mat, glm::mat4 mvp)
     {
-        if (batchMap.find(shaderID) == batchMap.end())
-            batchMap[shaderID] = std::move(Batch());
+        // texture를 lazy하게 로드하기 때문에 프레임 이슈가 생기려나?
+        if (textureMap.find(mat.textureName) == textureMap.end())
+            textureMap.emplace(mat.textureName, Texture2D {mat.textureName});
+
+        unsigned int indexOffset = batchMap[mat].GetVertexCount();
+        unsigned int indices[]
+        {
+            0 + indexOffset, 1 + indexOffset, 3 + indexOffset,   // first triangle
+            1 + indexOffset, 2 + indexOffset, 3 + indexOffset   // second triangle
+        };
+        batchMap[mat].AppendIndices(indices, 6);
 
         Vertex vertices[]
         {
@@ -32,13 +96,6 @@ namespace Seio
             {{ glm::vec3(mvp * glm::vec4(-0.5f, -0.5f, 0.0f, 1.0f)) }, { 0.0f, 0.0f }}, // bottom left
             {{ glm::vec3(mvp * glm::vec4(-0.5f,  0.5f, 0.0f, 1.0f)) }, { 0.0f, 1.0f }} // top left
         };
-        batchMap[shaderID].AppendVertices(vertices, 4);
-
-        unsigned int indices[]
-        {
-            0, 1, 3,   // first triangle
-            1, 2, 3    // second triangle
-        };
-        batchMap[shaderID].AppendIndices(indices, 6);
+        batchMap[mat].AppendVertices(vertices, 4);
     }
 }

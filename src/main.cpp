@@ -188,7 +188,7 @@ int main(int, char**)
                 ImGui::Selectable("GameObject");
                 if(ImGui::Selectable("Sprite"))
                 {
-                    GameObjectManager::Instance().CreateSprite("/Users/byunguk/Dev/SeioEngine/resources/textures/test.png");
+                    GameObjectManager::Instance().CreateSprite("test.png");
                 }
                 ImGui::EndPopup();
             }
@@ -252,14 +252,6 @@ int main(int, char**)
 
         // Drawing all gameobjects
         RenderSystem::Instance().Render();
-
-        // // // TODO: mvp는 어디서 받지?
-        // for (const auto& ptr : GameObjectManager::Instance().GetAllObjects())
-        // {
-        //     const auto& go = ptr.get();
-        //     auto mvp = cam.GetProjectionM() * cam.GetViewM() * go->GetTransform()->GetMatrix();
-        //     go->GetRenderer()->Draw(mvp);
-        // }
 
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
 

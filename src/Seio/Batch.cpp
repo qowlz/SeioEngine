@@ -1,5 +1,7 @@
 #include "Batch.h"
 
+#include <iostream>
+
 namespace Seio
 {
     Batch::Batch()
@@ -11,7 +13,7 @@ namespace Seio
         glBindVertexArray(vao);
 
         glBindBuffer(GL_ARRAY_BUFFER, vbo);
-        glBufferData(GL_ARRAY_BUFFER, sizeof(Vertex) * 1000, nullptr, GL_DYNAMIC_DRAW); // FIXME: 일단 버퍼의 크기를 정점 1000개정도로 잡음. 추후에 동적으로 성장하는 방식으로 바꿔야 함.
+        glBufferData(GL_ARRAY_BUFFER, vertexBufferMaxSize, nullptr, GL_DYNAMIC_DRAW); // FIXME: 일단 버퍼의 크기를 정점 1000개정도로 잡음. 추후에 동적으로 성장하는 방식으로 바꿔야 함.
 
         glVertexAttribPointer(0, 3, GL_FLOAT, false, sizeof(Vertex), (const void*) offsetof(Vertex, pos));
         glEnableVertexAttribArray(0);
@@ -20,7 +22,7 @@ namespace Seio
         glEnableVertexAttribArray(1);
 
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
-        glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned int) * 250 * 6, nullptr, GL_DYNAMIC_DRAW); // quad가 최대 250개 생성될 수 있고, quad 1개 당 6개의 indices가 필요함
+        glBufferData(GL_ELEMENT_ARRAY_BUFFER, indexBufferMaxSize, nullptr, GL_DYNAMIC_DRAW);
     }
 
     Batch::~Batch()
@@ -41,14 +43,16 @@ namespace Seio
 
     void Batch::AppendIndices(unsigned int* indices, size_t count)
     {
-        unsigned int orderOffset = ibOffset / sizeof(unsigned int);
-        for (size_t i = 0; i < count; i++)
-            indices[i] += orderOffset;
-
         unsigned int totalSize = sizeof(unsigned int) * count;
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
         glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, ibOffset, totalSize, indices);
 
         ibOffset += totalSize;
+    }
+
+    // FIXME: 이름을 ResetOffset이든 Reset이든 바꿔야할듯?
+    void Batch::Clear()
+    {
+        vbOffset = ibOffset = 0;
     }
 }

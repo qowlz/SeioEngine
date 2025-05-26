@@ -20,6 +20,7 @@ add_executable(${PROJECT_NAME}
     src/Seio/Global.cpp
     src/Seio/RenderSystem.cpp
     src/Seio/Batch.cpp
+    src/Seio/ShaderManager.cpp
 
     # glad
     vendor/glad/src/glad.c

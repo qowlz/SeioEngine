@@ -1,6 +1,7 @@
 #pragma once
 
 #include <unordered_map>
+#include <string>
 
 #include "glad/glad.h"
 #include "glm/glm.hpp"
@@ -11,6 +12,8 @@
 #include "GL/VertexBufferObject.h"
 #include "GL/IndexBufferObject.h"
 #include "Batch.h"
+#include "GL/Texture2D.h"
+#include "Material.h"
 
 namespace Seio
 {
@@ -21,9 +24,11 @@ namespace Seio
 
             void Render();
 
-            void RequestDrawQuad(GLuint textureID, GLuint shaderID, glm::mat4 mvp);
+            void RequestDrawQuad(const Material& mat, glm::mat4 mvp);
 
         private:
-            std::unordered_map<GLuint, Batch> batchMap;
+            std::unordered_map<Material, Batch, MaterialHash> batchMap;
+
+            std::unordered_map<std::string, Texture2D> textureMap;
     };
 }

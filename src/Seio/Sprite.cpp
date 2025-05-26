@@ -7,9 +7,8 @@
 
 namespace Seio
 {
-    Sprite::Sprite(std::string texturePath)
+    Sprite::Sprite(const std::string& textureName)
     {
-        renderer = std::make_unique<SpriteRenderer>(texturePath); // TODO: texturePath를 전파하는 방식말고 더 나은 방법이 없을까? 생성자가 종속되는 느낌이다.
-        AddComponent(renderer.get());
+        AddComponent(new SpriteRenderer { textureName });
     }
 }

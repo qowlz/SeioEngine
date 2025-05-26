@@ -4,34 +4,26 @@
 
 #include <string>
 
+#include "Material.h"
 #include "GL/Texture2D.h"
-#include "GL/VertexArrayObject.h"
-#include "GL/VertexBufferObject.h"
-#include "GL/IndexBufferObject.h"
 #include "GL/Shader.h"
 #include "RenderSystem.h"
+
 
 namespace Seio
 {
     /// @brief sprite를 화면상에 그려주는 역할을 하는 클래스
-    class SpriteRenderer : public Renderer
+    class SpriteRenderer : public Component
     {
     public:
         SpriteRenderer() = delete;
 
-        SpriteRenderer(const std::string &texturePath);
-
-        void Draw(glm::mat4 mvp) override;
+        SpriteRenderer(const std::string& textureName);
 
         void Update(float dt) override;
 
     private:
-        Texture2D mainTexture;
-        Shader shader;
-
-        VertexArrayObject vao;
-        VertexBufferObject vbo;
-        IndexBufferObject ibo;
+        Material material;
 
     };
 }

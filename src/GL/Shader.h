@@ -13,6 +13,9 @@ class Shader
 {
 public:
     Shader(const std::string& vsName, const std::string& fsName);
+
+    Shader(const std::string& shaderName);
+
     ~Shader();
 
     void SetFloat(const std::string& name, float value) const

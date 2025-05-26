@@ -1,8 +1,10 @@
 #include "GL/Shader.h"
 
+// 문자열 결합으로 인자를 보내는게 성능이 별로 안좋을지도?
+Shader::Shader(const std::string& shaderName) : Shader(shaderName + ".vert", shaderName + ".frag") {}
+
 Shader::Shader(const std::string& vsName, const std::string& fsName)
 {
-
    auto shaderPath = std::filesystem::path(__FILE__).parent_path() / ".." / ".." / "resources" / "shaders";
 
    std::string vertexPath = (shaderPath / vsName).generic_string();
@@ -85,7 +87,7 @@ Shader::Shader(const std::string& vsName, const std::string& fsName)
    glDeleteShader(vs);
    glDeleteShader(fs);
 
-   std::cout << "Successfully linked shader program" << std::endl;
+   std::cout << "Successfully linked shader program by " << this->id << std::endl;
 }
 
 Shader::~Shader()

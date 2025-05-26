@@ -9,6 +9,6 @@ namespace Seio
         public:
             Sprite() = delete;
 
-            Sprite(std::string texturePath);
+            Sprite(const std::string& textureName);
     };
 }

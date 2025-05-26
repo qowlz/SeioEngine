@@ -18,10 +18,10 @@ namespace Seio
 
     GameObject::~GameObject()
     {
-        for (auto comp : components)
-            delete comp;
-
-        components.clear();
+        // FIXME: 현재 SpriteRenderer와 Transform이 unique_ptr로 잡혀있기 때문에 여기서 메모리를 해제해주면, seg fault가 남.
+        // FIXME: GetComponent 기능을 만들고 난뒤에 주석을 풀어주기
+        // for (auto comp : components)
+        //     delete comp;
     }
 }
 

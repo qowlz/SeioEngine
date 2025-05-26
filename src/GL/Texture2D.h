@@ -7,7 +7,12 @@
 class Texture2D
 {
 public:
-    Texture2D();
+    // 기본 생성자 삭제
+    Texture2D() = delete;
+
+    Texture2D(const std::string& fileName);
+
+    ~Texture2D();
 
     // 복사 생성자 및 복사 대입 연산자 삭제
     Texture2D(const Texture2D& other) = delete;
@@ -17,9 +22,6 @@ public:
     Texture2D(Texture2D&& other) noexcept;
     Texture2D& operator=(Texture2D&& other) noexcept;
 
-    Texture2D(const std::string& pathStr);
-    ~Texture2D();
-
     void Bind(GLenum unit);
 
     int GetWidth() const { return width; }
@@ -27,7 +29,6 @@ public:
     GLuint GetID() const { return id; }
 
 private:
-    void Init(const std::string& path, GLint format, GLenum fileFormat);
 
     GLuint id;
     int width = 0, height = 0;
