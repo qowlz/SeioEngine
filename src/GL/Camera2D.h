@@ -22,6 +22,11 @@ public:
         return height;
     }
 
+    glm::vec3 GetPosition() const
+    {
+        return position;
+    }
+
     void SetWidth(float value)
     {
         width = value;
@@ -30,6 +35,11 @@ public:
     void SetHeight(float value)
     {
         height = value;
+    }
+
+    void SetPosition(glm::vec3 value)
+    {
+        position = value;
     }
 
 private:

@@ -208,11 +208,18 @@ int main(int, char**)
         ImGui::Begin("Viewport", NULL, ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoResize);
 
         const float cameraZoomSpeed = 0.25f;
+        const float cameraDragSpeed = 0.005f;
         if (ImGui::IsWindowHovered())
         {
             float add = cameraZoomSpeed * -io.MouseWheel;
             mainCam->SetWidth(max(1.0f, mainCam->GetWidth() + add));
             mainCam->SetHeight(max(1.0f, mainCam->GetHeight() + add));
+
+            if (io.KeyAlt && ImGui::IsMouseDragging(0))
+            {
+                auto dragDelta = io.MouseDelta;
+                mainCam->SetPosition(mainCam->GetPosition() + glm::vec3(-dragDelta.x * cameraDragSpeed, dragDelta.y * cameraDragSpeed, 0));
+            }
         }
 
         const auto viewportSize = ImGui::GetContentRegionAvail();
