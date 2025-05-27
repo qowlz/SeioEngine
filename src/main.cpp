@@ -10,6 +10,7 @@
 #include <iostream>
 #include <vector>
 #include <filesystem>
+#include <algorithm>
 
 #include "imgui.h"
 #include "imgui_impl_glfw.h"
@@ -205,6 +206,14 @@ int main(int, char**)
         ImGui::SetNextWindowPos(ImVec2(hierarchyWidth, 0));
         ImGui::SetNextWindowSize(ImVec2(viewportWndW, viewportWndH));
         ImGui::Begin("Viewport", NULL, ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoResize);
+
+        const float cameraZoomSpeed = 0.25f;
+        if (ImGui::IsWindowHovered())
+        {
+            float add = cameraZoomSpeed * -io.MouseWheel;
+            mainCam->SetWidth(max(1.0f, mainCam->GetWidth() + add));
+            mainCam->SetHeight(max(1.0f, mainCam->GetHeight() + add));
+        }
 
         const auto viewportSize = ImGui::GetContentRegionAvail();
         ImGui::Image((ImTextureID)textureColorBuffer, viewportSize, ImVec2(0.0f, 1.0f), ImVec2(1.0f, 0.0f));

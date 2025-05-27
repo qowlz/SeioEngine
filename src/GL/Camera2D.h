@@ -12,11 +12,31 @@ public:
     glm::mat4 GetViewM() const;
     glm::mat4 GetProjectionM() const;
 
+    float GetWidth() const
+    {
+        return width;
+    }
+
+    float GetHeight() const
+    {
+        return height;
+    }
+
+    void SetWidth(float value)
+    {
+        width = value;
+    }
+
+    void SetHeight(float value)
+    {
+        height = value;
+    }
+
 private:
     glm::vec3 position;
     glm::vec3 front;
     glm::vec3 up;
 
-    int width;
-    int height;
+    float width;
+    float height;
 };
