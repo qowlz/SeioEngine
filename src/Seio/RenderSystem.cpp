@@ -76,9 +76,7 @@ namespace Seio
 
     void RenderSystem::RequestDrawQuad(const Material& mat, glm::mat4 mvp)
     {
-        // texture를 lazy하게 로드하기 때문에 프레임 이슈가 생기려나?
-        if (textureMap.find(mat.textureName) == textureMap.end())
-            textureMap.emplace(mat.textureName, Texture2D {mat.textureName});
+        GetOrCreateTexture(mat.textureName);
 
         unsigned int indexOffset = batchMap[mat].GetVertexCount();
         unsigned int indices[]
@@ -97,5 +95,12 @@ namespace Seio
             {{ glm::vec3(mvp * glm::vec4(-0.5f,  0.5f, 0.0f, 1.0f)) }, { 0.0f, 1.0f }} // top left
         };
         batchMap[mat].AppendVertices(vertices, 4);
+    }
+
+    GLuint RenderSystem::GetOrCreateTexture(const std::string& textureName)
+    {
+        auto [it, inserted] = textureMap.try_emplace(textureName, textureName);
+
+        return it->second.GetID();
     }
 }

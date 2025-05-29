@@ -22,6 +22,8 @@ namespace Seio
 
         void Update(float dt) override;
 
+        void OnDrawImGui() override;
+
     private:
         Material material;
 

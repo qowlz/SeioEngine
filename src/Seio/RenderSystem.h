@@ -26,6 +26,8 @@ namespace Seio
 
             void RequestDrawQuad(const Material& mat, glm::mat4 mvp);
 
+            GLuint GetOrCreateTexture(const std::string& textureName);
+
         private:
             std::unordered_map<Material, Batch, MaterialHash> batchMap;
 
