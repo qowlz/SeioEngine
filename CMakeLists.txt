@@ -69,3 +69,7 @@ target_include_directories(${PROJECT_NAME} PRIVATE src)
 # link vanilla-lua
 add_subdirectory(vendor/lua-5.4.7)
 target_link_libraries(${PROJECT_NAME} lua_static)
+
+# include sol
+target_include_directories(${PROJECT_NAME} PRIVATE vendor/sol-3.3.0/include)
+
