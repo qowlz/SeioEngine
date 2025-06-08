@@ -65,3 +65,7 @@ target_include_directories(${PROJECT_NAME} PRIVATE vendor/glm)
 
 #include src headers
 target_include_directories(${PROJECT_NAME} PRIVATE src)
+
+# link vanilla-lua
+add_subdirectory(vendor/lua-5.4.7)
+target_link_libraries(${PROJECT_NAME} lua_static)
