@@ -29,6 +29,7 @@
 #include "Seio/GameObjectManager.h"
 #include "Seio/Global.h"
 #include "Seio/RenderSystem.h"
+#include "Seio/ImGuiDrawUtils.h"
 
 static void glfw_error_callback(int error, const char* description)
 {
@@ -241,6 +242,18 @@ int main(int, char**)
             {
                 comp->OnDrawImGui();
             }
+
+            // Component Adding UI
+            if (ImGui::Button("Add Component"))
+                ImGui::OpenPopup("Component Select Popup");
+
+            auto scriptPath = std::filesystem::path(__FILE__).parent_path() / ".." / "resources" / "scripts";
+            ImGuiDrawUtils::DrawFileSelectPopup("Component Select Popup", scriptPath, [](const std::string fileName)
+            {
+               std::cout << "Selected!" << fileName << std::endl;
+            });
+
+
         }
 
         ImGui::End();
